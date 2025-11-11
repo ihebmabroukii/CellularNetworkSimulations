@@ -2,6 +2,8 @@ import struct
 import zlib
 import socket
 import threading
+import hashlib
+import os
 
 # -------------------------
 # Part 1: Building / Sending a 2G Frame
@@ -161,3 +163,36 @@ if __name__ == "__main__":
     print("-> Detach IMSI A:", detach_request(imsi_a))
     print("-> After detach IMSI A:", get_session(imsi_a))
     print("-> Re-attach IMSI A:", attach_request(imsi_a))
+
+
+# -------------------------
+# Part 3: Authentication Simulation
+# -------------------------
+# Simple fake subscriber database
+hlr_db = {
+    "001010123456789": "secret_key_abc123",
+    "001010987654321": "secret_key_xyz987"
+}
+
+def generate_rand():
+    return os.urandom(8)
+
+def compute_sres(ki, rand):
+    # Simplified auth algorithm (in real GSM it's A3)
+    return hashlib.sha256((ki + rand.hex()).encode()).hexdigest()[:8]
+
+def authenticate_mobile(imsi):
+    if imsi not in hlr_db:
+        return {"imsi": imsi, "status": "unknown_subscriber"}
+    
+    ki = hlr_db[imsi]
+    rand = generate_rand()
+    expected_sres = compute_sres(ki, rand)
+
+    # Simulate mobile generating its own response
+    mobile_sres = compute_sres(ki, rand)
+
+    if mobile_sres == expected_sres:
+        return {"imsi": imsi, "auth": "success", "rand": rand.hex(), "sres": mobile_sres}
+    else:
+        return {"imsi": imsi, "auth": "failure"}

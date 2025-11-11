@@ -119,3 +119,17 @@ This code was developed to:
   - Data integrity (CRC)
   - IP address and session management
 - Allow **local testing** and **educational experimentation** without relying on a real GSM network.
+
+## 🔹 Part 3 – Mobile Authentication Simulation (2G/3G)
+
+This part simulates the authentication process between a mobile device, the **VLR**, and the **HLR/AuC** in GSM/UMTS networks.  
+The goal is to verify a subscriber’s identity **without exposing the secret key** (Ki) stored in the HLR/AuC.
+
+---
+
+### 🔸 Authentication Process
+
+1. The **VLR** generates a random challenge (RAND).
+2. The **mobile device** computes a response (SRES) using its secret key (Ki) and the challenge.
+3. The **VLR** compares the SRES with the expected value calculated from the HLR/AuC.
+4. If they match, authentication succeeds; otherwise, it fails.
